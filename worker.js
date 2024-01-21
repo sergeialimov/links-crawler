@@ -5,7 +5,7 @@ async function crawlPage(keyword, searchEngine, pages) {
   let browser, page;
   try {
       // Launch the browser
-      browser = await puppeteer.launch();
+      browser = await puppeteer.launch({ headless: 'new' });
       page = await browser.newPage();
 
       // URL construction based on the search engine
