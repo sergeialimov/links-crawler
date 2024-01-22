@@ -15,18 +15,15 @@ function runService(workerData) {
 }
 
 async function startCrawling(pages, keywords) {
-  const promises = [];
   const searchEngines = ['google'];
 
-  for (const keyword of keywords) {
-    for (const searchEngine of searchEngines) {
-      for (let page = 1; page <= pages; page++) {
-        promises.push(runService({ keyword, searchEngine, page }));
-      }
-    }
-  }
+  // Create an array of tasks using array methods instead of loops
+  const tasks = keywords.flatMap((keyword) => searchEngines.flatMap((searchEngine) => Array
+    .from({ length: pages }, (_, i) => runService({ keyword, searchEngine, page: i + 1 }))));
 
-  const results = await Promise.all(promises);
+  // Wait for all the tasks to complete
+  const results = await Promise.all(tasks);
+
   return aggregateResults(results);
 }
 
