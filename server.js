@@ -1,7 +1,7 @@
 const express = require('express');
 
 const bodyParser = require('body-parser');
-const apiRoutes = require('./api');
+const apiRoutes = require('./routes/sponsoredLinksRoutes');
 
 const app = express();
 const port = 3000;

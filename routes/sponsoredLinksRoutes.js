@@ -1,4 +1,4 @@
-const { startCrawling } = require('./worker');
+const { startCrawling } = require('../workers/crawlManager');
 
 function apiRoutes(app) {
   app.get('/api/v1/sponsored-links', async (req, res) => {

@@ -1,4 +1,5 @@
-const { crawlGoogle } = require('./googleCrawler');
+const { parentPort, workerData } = require('worker_threads');
+const { crawlGoogle } = require('../crawlers/googleCrawler');
 // const { crawlBing } = require('./bingCrawler');
 // const { crawlYahoo } = require('./yahooCrawler');
 
@@ -11,5 +12,13 @@ async function crawlPage(keyword, searchEngine, pages) {
             throw new Error('Unsupported search engine');
     }
 }
+
+crawlPage(workerData.keyword, workerData.searchEngine, workerData.page)
+    .then(result => {
+        parentPort.postMessage(result);
+    })
+    .catch(error => {
+        parentPort.postMessage({ error: error.message });
+    });
 
 module.exports = { crawlPage };
