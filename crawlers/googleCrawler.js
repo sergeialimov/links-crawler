@@ -1,12 +1,11 @@
 /* eslint-disable no-await-in-loop */
 const puppeteer = require('puppeteer');
 
-async function crawlGoogle(keyword, pages) {
+async function crawlGoogle(keyword, pageNumber) {
   let browser;
   let page;
 
   try {
-    console.log('-- crawlGoogle');
     browser = await puppeteer.launch({
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -15,7 +14,7 @@ async function crawlGoogle(keyword, pages) {
 
     await page.setViewport({ width: 1920, height: 1080 });
 
-    const url = `https://www.google.com/search?q=${encodeURIComponent(keyword)}&start=${(pages - 1) * 10}`;
+    const url = `https://www.google.com/search?q=${encodeURIComponent(keyword)}&start=${(pageNumber - 1) * 10}`;
     await page.goto(url, { waitUntil: 'domcontentloaded' });
 
     let lastHeight = await page.evaluate('document.body.scrollHeight'); let
@@ -53,9 +52,14 @@ async function crawlGoogle(keyword, pages) {
       return links;
     });
     // add logs about number of sponsored links found, mention keyword and page number
-    console.log(`-- crawlGoogle: ${sponsoredLinks.length} sponsored links found for keyword ${keyword} on page ${pages}`);
+    console.log(`-- crawlGoogle: ${sponsoredLinks.length} sponsored links found for keyword ${keyword} on page ${pageNumber}`);
 
-    return sponsoredLinks;
+    return {
+      searchEngine: 'google',
+      keyword,
+      sponsoredLinks,
+      page: pageNumber,
+    };
   } catch (error) {
     console.error('Error in crawlGoogle:', error.message);
     return [];
