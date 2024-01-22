@@ -15,7 +15,11 @@ function runService(workerData) {
 }
 
 async function startCrawling(pages, keywords) {
-  const searchEngines = ['google'];
+  const searchEngines = [
+    // 'google',
+    'yahoo',
+    // 'bing'
+  ];
 
   // Create an array of tasks using array methods instead of loops
   const tasks = keywords.flatMap((keyword) => searchEngines.flatMap((searchEngine) => Array

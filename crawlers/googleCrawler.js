@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const puppeteer = require('puppeteer');
 
 async function crawlGoogle(keyword, pages) {
@@ -34,7 +35,9 @@ async function crawlGoogle(keyword, pages) {
       }
 
       // Wait a short while to give the page a chance to start any new network activity
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 500);
+      });
     }
 
     // Extract the sponsored links
@@ -49,7 +52,8 @@ async function crawlGoogle(keyword, pages) {
       });
       return links;
     });
-    console.log('-- sponsoredLinks', sponsoredLinks.length);
+    // add logs about number of sponsored links found, mention keyword and page number
+    console.log(`-- crawlGoogle: ${sponsoredLinks.length} sponsored links found for keyword ${keyword} on page ${pages}`);
 
     return sponsoredLinks;
   } catch (error) {
