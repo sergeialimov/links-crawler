@@ -17,8 +17,8 @@ function runService(workerData) {
 async function startCrawling(pages, keywords) {
   const searchEngines = [
     // 'google',
-    'yahoo',
-    // 'bing'
+    // 'yahoo',
+    'bing',
   ];
 
   // Create an array of tasks using array methods instead of loops
