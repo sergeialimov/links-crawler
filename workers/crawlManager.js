@@ -1,26 +1,7 @@
-// const { aggregateResults } = require('../utils/aggregator');
-// const { crawlPage } = require('../crawlers');
-
-
-// async function startCrawling(pages, keywords) {
-//   const promises = [];
-//   // const searchEngines = ['google', 'bing', 'yahoo'];
-//   const searchEngines = ['google'];
-
-//   for (let keyword of keywords) {
-//     for (let searchEngine of searchEngines) {
-//       for (let page = 1; page <= pages; page++) {
-//         promises.push(crawlPage(keyword, searchEngine, page));
-//       }
-//     }
-//   }
-
-//   const results = await Promise.all(promises);
-//   return aggregateResults(results);
-// }
-
 const { Worker } = require('worker_threads');
 const path = require('path');
+
+const { aggregateResults } = require('../utils/aggregator');
 
 function runService(workerData) {
     return new Promise((resolve, reject) => {
@@ -47,8 +28,7 @@ async function startCrawling(pages, keywords) {
     }
 
     const results = await Promise.all(promises);
-    // Aggregate and process results
-    return results; // Modify as needed
+    return aggregateResults(results);
 }
 
 

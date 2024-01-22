@@ -1,13 +1,17 @@
 const { parentPort, workerData } = require('worker_threads');
-const { crawlGoogle } = require('../crawlers/googleCrawler');
+const {
+    crawlGoogle,
+    crawlYahoo,
+    // crawlBing
+ } = require('../crawlers');
 // const { crawlBing } = require('./bingCrawler');
-// const { crawlYahoo } = require('./yahooCrawler');
 
-async function crawlPage(keyword, searchEngine, pages) {
+async function crawlPage(keyword, searchEngine, pageNumber) {
     switch (searchEngine) {
         case 'google':
-            return crawlGoogle(keyword, pages);
-        // Other search engines can be added here as well.
+            return crawlGoogle(keyword, pageNumber);
+        case 'yahoo':
+            return crawlYahoo(keyword, pageNumber);
         default:
             throw new Error('Unsupported search engine');
     }
