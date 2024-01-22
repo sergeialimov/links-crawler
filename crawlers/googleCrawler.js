@@ -1,17 +1,17 @@
 const puppeteer = require('puppeteer');
 
 async function crawlGoogle(keyword, pages) {
-  let browser; let
-    page;
-  console.log('-- crawlGoogle');
+  let browser;
+  let page;
+
   try {
+    console.log('-- crawlGoogle');
     browser = await puppeteer.launch({
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     page = await browser.newPage();
 
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36');
     await page.setViewport({ width: 1920, height: 1080 });
 
     const url = `https://www.google.com/search?q=${encodeURIComponent(keyword)}&start=${(pages - 1) * 10}`;
@@ -21,13 +21,13 @@ async function crawlGoogle(keyword, pages) {
       newHeight;
     let stabilizationCount = 0;
 
-    while (stabilizationCount < 3) { // We wait for 3 consecutive checks where the height does not change
+    while (stabilizationCount < 3) { // We wait for 3 checks where the height does not change
       await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
       await page.waitForNetworkIdle(); // This waits for network activity to be idle for 500ms
 
       newHeight = await page.evaluate('document.body.scrollHeight');
       if (newHeight === lastHeight) {
-        stabilizationCount++;
+        stabilizationCount += 1;
       } else {
         stabilizationCount = 0; // Reset the count if the height changed
         lastHeight = newHeight;
