@@ -1,4 +1,3 @@
-const puppeteer = require('puppeteer');
 const { aggregateResults } = require('./aggregator');
 const { crawlPage } = require('./crawlers');
 
