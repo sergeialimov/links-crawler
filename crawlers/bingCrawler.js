@@ -6,9 +6,9 @@ async function crawlBing(keyword, pageNumber) {
 
   // Calculate the offset for the Bing search results based on the page number.
   const offset = (pageNumber - 1) * 10;
-  const searchUrl = `https://www.bing.com/search?q=${encodeURIComponent(keyword)}&first=${offset}`;
+  const url = `https://www.bing.com/search?q=${encodeURIComponent(keyword)}&first=${offset}`;
 
-  await page.goto(searchUrl, { waitUntil: 'networkidle2' });
+  await page.goto(url, { waitUntil: 'networkidle2' });
 
   // Handling the cookie consent pop-up
   const cookieButtonSelector = '#bnp_btn_accept'; // Selector for the 'Accept' button in the cookie consent pop-up
