@@ -30,6 +30,7 @@ async function crawlBing(keyword, pageNumber) {
   });
 
   await browser.close();
+
   return {
     searchEngine: 'bing',
     keyword,

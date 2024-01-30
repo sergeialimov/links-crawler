@@ -51,8 +51,6 @@ async function crawlGoogle(keyword, pageNumber) {
       });
       return links;
     });
-    // add logs about number of sponsored links found, mention keyword and page number
-    console.log(`-- crawlGoogle: ${sponsoredLinks.length} sponsored links found for keyword ${keyword} on page ${pageNumber}`);
 
     return {
       searchEngine: 'google',

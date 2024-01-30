@@ -11,7 +11,13 @@ function apiRoutes(app) {
 
       const keywordsArray = keywords.split(',');
 
+      const start = performance.now();
       const results = await startCrawling(pages, keywordsArray);
+      const end = performance.now();
+
+      console.log(`Crawling took ${Math.round(end - start)} ms`);
+      console.log('Crawling has been finished');
+
       return res.json(results);
     } catch (error) {
       return res.status(500).send(error.message);

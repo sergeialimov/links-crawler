@@ -17,7 +17,7 @@ function runService(workerData) {
 async function startCrawling(pages, keywords) {
   const searchEngines = [
     // 'google',
-    // 'yahoo',
+    'yahoo',
     'bing',
   ];
 
