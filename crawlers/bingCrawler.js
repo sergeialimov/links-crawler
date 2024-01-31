@@ -1,40 +1,56 @@
 const puppeteer = require('puppeteer');
 
-const { bingUrlSelector } = require('../constants');
+const {
+  SEARCH_ENGINES,
+  RESULTS_PER_PAGE,
+  BING_BASE_URL,
+  BING_URL_SELECTOR,
+  BING_NETWORK_IDLE_EVENT,
+  BING_COOKIE_BUTTON_SELECTOR,
+} = require('../constants');
 
 async function crawlBing(keyword, pageNumber) {
-  const browser = await puppeteer.launch({ headless: 'new' });
-  const page = await browser.newPage();
+  try {
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
 
-  // Calculate the offset for the Bing search results based on the page number.
-  const offset = (pageNumber - 1) * 10;
-  const url = `https://www.bing.com/search?q=${encodeURIComponent(keyword)}&first=${offset}`;
+    // Calculate the offset for the Bing search results based on the page number.
+    const offset = (pageNumber - 1) * RESULTS_PER_PAGE;
+    const url = `${BING_BASE_URL}${encodeURIComponent(keyword)}&first=${offset}`;
 
-  await page.goto(url, { waitUntil: 'networkidle2' });
+    await page.goto(url, { waitUntil: BING_NETWORK_IDLE_EVENT });
 
-  // Handling the cookie consent pop-up
-  const cookieButtonSelector = '#bnp_btn_accept'; // Selector for the 'Accept' button in the cookie consent pop-up
-  if (await page.$(cookieButtonSelector) !== null) {
-    await page.click(cookieButtonSelector);
+    // Handling the cookie consent pop-up
+    if (await page.$(BING_COOKIE_BUTTON_SELECTOR) !== null) {
+      await page.click(BING_COOKIE_BUTTON_SELECTOR);
+    }
+
+    // Wait for the sponsored ads to load
+    await page.waitForSelector(BING_URL_SELECTOR);
+
+    const sponsoredLinks = await page.evaluate((sel) => {
+      const ads = document.querySelectorAll(sel);
+      // Extract the text content, which is the URL
+      return Array.from(ads).map((attribute) => attribute.innerText.trim());
+    }, BING_URL_SELECTOR);
+
+    await browser.close();
+
+    return {
+      searchEngine: SEARCH_ENGINES.BING,
+      keyword,
+      sponsoredLinks,
+      page: pageNumber,
+    };
+  } catch (error) {
+    console.error(`Error occurred while crawling Bing: ${error}`);
+    return {
+      searchEngine: SEARCH_ENGINES.BING,
+      keyword,
+      sponsoredLinks: [],
+      page: pageNumber,
+    };
   }
-
-  // Wait for the sponsored ads to load
-  await page.waitForSelector(bingUrlSelector);
-
-  const sponsoredLinks = await page.evaluate((sel) => {
-    const ads = document.querySelectorAll(sel);
-    // Extract the text content, which is the URL
-    return Array.from(ads).map((attribute) => attribute.innerText.trim());
-  }, bingUrlSelector);
-
-  await browser.close();
-
-  return {
-    searchEngine: 'bing',
-    keyword,
-    sponsoredLinks,
-    page: pageNumber,
-  };
 }
 
 module.exports = { crawlBing };
