@@ -2,6 +2,7 @@ const express = require('express');
 
 const bodyParser = require('body-parser');
 const apiRoutes = require('./routes/sponsoredLinksRoutes');
+require('dotenv').config();
 
 const app = express();
 const port = 3000;

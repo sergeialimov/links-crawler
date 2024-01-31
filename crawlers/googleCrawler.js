@@ -1,5 +1,12 @@
 /* eslint-disable no-await-in-loop */
 const puppeteer = require('puppeteer');
+const {
+  SEARCH_ENGINES,
+  NETWORK_IDLE_EVENT,
+  RESULTS_PER_PAGE,
+  GOOGLE_BASE_URL,
+  GOOGLE_AD_SELECTOR,
+} = require('../constants');
 
 async function crawlGoogle(keyword, pageNumber) {
   let browser;
@@ -7,18 +14,18 @@ async function crawlGoogle(keyword, pageNumber) {
 
   try {
     browser = await puppeteer.launch({
-      headless: 'new',
+      headless: process.env.HEADLESS_MODE,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     page = await browser.newPage();
 
     await page.setViewport({ width: 1920, height: 1080 });
 
-    const url = `https://www.google.com/search?q=${encodeURIComponent(keyword)}&start=${(pageNumber - 1) * 10}`;
-    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    const url = `${GOOGLE_BASE_URL}?q=${encodeURIComponent(keyword)}&start=${(pageNumber - 1) * RESULTS_PER_PAGE}`;
+    await page.goto(url, { waitUntil: NETWORK_IDLE_EVENT });
 
-    let lastHeight = await page.evaluate('document.body.scrollHeight'); let
-      newHeight;
+    let lastHeight = await page.evaluate('document.body.scrollHeight');
+    let newHeight;
     let stabilizationCount = 0;
 
     while (stabilizationCount < 3) { // We wait for 3 checks where the height does not change
@@ -42,7 +49,7 @@ async function crawlGoogle(keyword, pageNumber) {
     // Extract the sponsored links
     const sponsoredLinks = await page.evaluate(() => {
       const links = [];
-      const ads = document.querySelectorAll('[data-text-ad]');
+      const ads = document.querySelectorAll(GOOGLE_AD_SELECTOR);
       ads.forEach((ad) => {
         const linkElement = ad.querySelector('a');
         if (linkElement) {
@@ -53,14 +60,19 @@ async function crawlGoogle(keyword, pageNumber) {
     });
 
     return {
-      searchEngine: 'google',
+      searchEngine: SEARCH_ENGINES.GOOGLE,
       keyword,
       sponsoredLinks,
       page: pageNumber,
     };
   } catch (error) {
     console.error('Error in crawlGoogle:', error.message);
-    return [];
+    return {
+      searchEngine: SEARCH_ENGINES.GOOGLE,
+      keyword,
+      sponsoredLinks: [],
+      page: pageNumber,
+    };
   } finally {
     if (browser) {
       await browser.close();

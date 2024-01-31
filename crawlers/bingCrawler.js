@@ -1,12 +1,11 @@
 const puppeteer = require('puppeteer');
-require('dotenv').config();
 
 const {
   SEARCH_ENGINES,
   RESULTS_PER_PAGE,
   BING_BASE_URL,
   BING_URL_SELECTOR,
-  BING_NETWORK_IDLE_EVENT,
+  NETWORK_IDLE_EVENT,
   BING_COOKIE_BUTTON_SELECTOR,
 } = require('../constants');
 
@@ -17,9 +16,9 @@ async function crawlBing(keyword, pageNumber) {
 
     // Calculate the offset for the Bing search results based on the page number.
     const offset = (pageNumber - 1) * RESULTS_PER_PAGE;
-    const url = `${BING_BASE_URL}${encodeURIComponent(keyword)}&first=${offset}`;
+    const url = `${BING_BASE_URL}?q=${encodeURIComponent(keyword)}&first=${offset}`;
 
-    await page.goto(url, { waitUntil: BING_NETWORK_IDLE_EVENT });
+    await page.goto(url, { waitUntil: NETWORK_IDLE_EVENT });
 
     // Handling the cookie consent pop-up
     if (await page.$(BING_COOKIE_BUTTON_SELECTOR) !== null) {

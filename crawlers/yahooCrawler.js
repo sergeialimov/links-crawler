@@ -9,7 +9,7 @@ async function crawlYahoo(keyword, pageNumber) {
   const browser = await puppeteer.launch({ headless: process.env.HEADLESS_MODE });
   const page = await browser.newPage();
 
-  const url = `${YAHOO_BASE_URL}${encodeURIComponent(keyword)}&fp=${pageNumber}`;
+  const url = `${YAHOO_BASE_URL}?p=${encodeURIComponent(keyword)}&fp=${pageNumber}`;
   await page.goto(url);
 
   const sponsoredLinks = await page.evaluate((selectors) => {
