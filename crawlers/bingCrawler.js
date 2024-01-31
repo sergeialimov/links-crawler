@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+require('dotenv').config();
 
 const {
   SEARCH_ENGINES,
@@ -11,7 +12,7 @@ const {
 
 async function crawlBing(keyword, pageNumber) {
   try {
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteer.launch({ headless: process.env.HEADLESS_MODE });
     const page = await browser.newPage();
 
     // Calculate the offset for the Bing search results based on the page number.
