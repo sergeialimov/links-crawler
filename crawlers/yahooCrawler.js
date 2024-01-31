@@ -1,14 +1,19 @@
 const puppeteer = require('puppeteer');
+const {
+  YAHOO_AD_SELECTORS,
+  YAHOO_BASE_URL,
+  SEARCH_ENGINES,
+} = require('../constants');
 
 async function crawlYahoo(keyword, pageNumber) {
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch({ headless: process.env.HEADLESS_MODE });
   const page = await browser.newPage();
 
-  const url = `https://search.yahoo.com/search?p=${encodeURIComponent(keyword)}&fp=${pageNumber}`;
+  const url = `${YAHOO_BASE_URL}${encodeURIComponent(keyword)}&fp=${pageNumber}`;
   await page.goto(url);
 
-  const sponsoredLinks = await page.evaluate(() => {
-    const adElements = document.querySelectorAll('a[data-matarget="ad-ql"], a[data-matarget="ad"]');
+  const sponsoredLinks = await page.evaluate((selectors) => {
+    const adElements = document.querySelectorAll(selectors);
     const links = [];
     adElements.forEach((element) => {
       const href = element.getAttribute('href');
@@ -17,12 +22,12 @@ async function crawlYahoo(keyword, pageNumber) {
       }
     });
     return links;
-  });
+  }, YAHOO_AD_SELECTORS);
 
   await browser.close();
 
   return {
-    searchEngine: 'yahoo',
+    searchEngine: SEARCH_ENGINES.YAHOO,
     keyword,
     sponsoredLinks,
     pageNum: pageNumber,
