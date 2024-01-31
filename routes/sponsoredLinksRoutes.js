@@ -15,8 +15,7 @@ function apiRoutes(app) {
       const results = await startCrawling(pages, keywordsArray);
       const end = performance.now();
 
-      console.log(`Crawling took ${Math.round(end - start)} ms`);
-      console.log('Crawling has been finished');
+      console.log(`Crawling has been finished and took ${Math.round(end - start)} ms`);
 
       return res.json(results);
     } catch (error) {

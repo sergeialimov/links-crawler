@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer');
 
+const { bingUrlSelector } = require('../constants');
+
 async function crawlBing(keyword, pageNumber) {
   const browser = await puppeteer.launch({ headless: 'new' });
   const page = await browser.newPage();
@@ -17,17 +19,13 @@ async function crawlBing(keyword, pageNumber) {
   }
 
   // Wait for the sponsored ads to load
-  await page.waitForSelector('.b_ad');
+  await page.waitForSelector(bingUrlSelector);
 
-  // Extract the sponsored links
-  const sponsoredLinks = await page.evaluate(() => {
-    const ads = document.querySelectorAll('.b_ad');
-    return Array.from(ads).map((ad) => {
-      // We now need to look for the 'a' tag since the structure is different in headless mode
-      const linkElement = ad.querySelector('a');
-      return linkElement ? linkElement.href : '';
-    }).filter((href) => href); // Filter out any empty strings
-  });
+  const sponsoredLinks = await page.evaluate((sel) => {
+    const ads = document.querySelectorAll(sel);
+    // Extract the text content, which is the URL
+    return Array.from(ads).map((attribute) => attribute.innerText.trim());
+  }, bingUrlSelector);
 
   await browser.close();
 
