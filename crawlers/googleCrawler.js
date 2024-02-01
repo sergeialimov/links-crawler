@@ -1,55 +1,71 @@
-/* eslint-disable no-await-in-loop */
 const puppeteer = require('puppeteer');
 const {
   SEARCH_ENGINES,
   NETWORK_IDLE_EVENT,
-  RESULTS_PER_PAGE,
   GOOGLE_BASE_URL,
   GOOGLE_AD_SELECTOR,
+  GOOGLE_MORE_RESULTS_BUTTON_SELECTOR,
+  GOOGLE_MAX_SCROLLS,
 } = require('../constants');
+const { parseHeadlessMode } = require('../utils');
 
 async function crawlGoogle(keyword, pageNumber) {
   let browser;
   let page;
-
+  let sponsoredLinks = [];
   try {
     browser = await puppeteer.launch({
-      headless: process.env.HEADLESS_MODE,
+      headless: parseHeadlessMode(process.env.HEADLESS_MODE),
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     page = await browser.newPage();
 
-    await page.setViewport({ width: 1920, height: 1080 });
+    await page.setViewport({ width: 1920, height: 2080 });
 
-    const url = `${GOOGLE_BASE_URL}?q=${encodeURIComponent(keyword)}&start=${(pageNumber - 1) * RESULTS_PER_PAGE}`;
+    const url = `${GOOGLE_BASE_URL}?q=${encodeURIComponent(keyword)}`;
     await page.goto(url, { waitUntil: NETWORK_IDLE_EVENT });
 
-    let lastHeight = await page.evaluate('document.body.scrollHeight');
-    let newHeight;
-    let stabilizationCount = 0;
+    // Click the "More results" button 'pageNumber' times
+    /* eslint-disable no-await-in-loop */
+    for (let i = 0; i < pageNumber; i += 1) {
+      let moreResultsButton;
+      let notFoundCounter = 0;
 
-    while (stabilizationCount < 3) { // We wait for 3 checks where the height does not change
-      await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
-      await page.waitForNetworkIdle(); // This waits for network activity to be idle for 500ms
+      while (!moreResultsButton && notFoundCounter < GOOGLE_MAX_SCROLLS) {
+        console.log('-- scroll');
+        // Scroll down the page
+        await page.evaluate(() => {
+          window.scrollTo(0, document.body.scrollHeight);
+        });
 
-      newHeight = await page.evaluate('document.body.scrollHeight');
-      if (newHeight === lastHeight) {
-        stabilizationCount += 1;
-      } else {
-        stabilizationCount = 0; // Reset the count if the height changed
-        lastHeight = newHeight;
+        // Wait for a short period to allow the page to load
+        await page.waitForTimeout(1000);
+
+        // Check if the 'moreResultsButton' is present
+        moreResultsButton = await page.$(GOOGLE_MORE_RESULTS_BUTTON_SELECTOR);
+        if (!moreResultsButton) {
+          notFoundCounter += 1;
+          console.log('-- notFoundCounter', notFoundCounter);
+        }
       }
 
-      // Wait a short while to give the page a chance to start any new network activity
-      await new Promise((resolve) => {
-        setTimeout(() => resolve(), 500);
-      });
+      // Click the "More results" button
+      await page.evaluate((sel) => {
+        moreResultsButton = document.querySelector(sel);
+        if (moreResultsButton) {
+          console.log('-- moreResultsButton', moreResultsButton);
+          moreResultsButton.click();
+        }
+      }, GOOGLE_MORE_RESULTS_BUTTON_SELECTOR);
+      await page.waitForNetworkIdle();
+      await page.waitForTimeout(10000);
     }
+    /* eslint-enable no-await-in-loop */
 
     // Extract the sponsored links
-    const sponsoredLinks = await page.evaluate(() => {
+    sponsoredLinks = await page.evaluate((sel) => {
       const links = [];
-      const ads = document.querySelectorAll(GOOGLE_AD_SELECTOR);
+      const ads = document.querySelectorAll(sel);
       ads.forEach((ad) => {
         const linkElement = ad.querySelector('a');
         if (linkElement) {
@@ -57,27 +73,21 @@ async function crawlGoogle(keyword, pageNumber) {
         }
       });
       return links;
-    });
-
-    return {
-      searchEngine: SEARCH_ENGINES.GOOGLE,
-      keyword,
-      sponsoredLinks,
-      page: pageNumber,
-    };
+    }, GOOGLE_AD_SELECTOR);
   } catch (error) {
-    console.error('Error in crawlGoogle:', error.message);
-    return {
-      searchEngine: SEARCH_ENGINES.GOOGLE,
-      keyword,
-      sponsoredLinks: [],
-      page: pageNumber,
-    };
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
+    console.error(`Error in ${SEARCH_ENGINES.GOOGLE}: ${error.message}`);
   }
+
+  if (browser) {
+    await browser.close();
+  }
+
+  return {
+    searchEngine: SEARCH_ENGINES.GOOGLE,
+    keyword,
+    sponsoredLinks,
+    page: pageNumber,
+  };
 }
 
 module.exports = { crawlGoogle };

@@ -25,6 +25,8 @@ const YAHOO_BASE_URL = 'https://search.yahoo.com/search';
 // Google
 const GOOGLE_BASE_URL = 'https://www.google.com/search';
 const GOOGLE_AD_SELECTOR = '[data-text-ad]';
+const GOOGLE_MORE_RESULTS_BUTTON_SELECTOR = 'a[role="button"][aria-label="More results"]';
+const GOOGLE_MAX_SCROLLS = 10;
 
 module.exports = {
   // Common
@@ -45,4 +47,6 @@ module.exports = {
   // Google
   GOOGLE_BASE_URL,
   GOOGLE_AD_SELECTOR,
+  GOOGLE_MORE_RESULTS_BUTTON_SELECTOR,
+  GOOGLE_MAX_SCROLLS,
 };

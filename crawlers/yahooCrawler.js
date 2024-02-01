@@ -1,21 +1,23 @@
 const puppeteer = require('puppeteer');
 const {
+  SEARCH_ENGINES,
+  NETWORK_IDLE_EVENT,
   YAHOO_AD_SELECTORS,
   YAHOO_BASE_URL,
-  SEARCH_ENGINES,
 } = require('../constants');
 const { parseHeadlessMode } = require('../utils');
 
 async function crawlYahoo(keyword, pageNumber) {
+  let browser;
   let sponsoredLinks = [];
   try {
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       headless: parseHeadlessMode(process.env.HEADLESS_MODE),
     });
     const page = await browser.newPage();
 
     const url = `${YAHOO_BASE_URL}?p=${encodeURIComponent(keyword)}&fp=${pageNumber}`;
-    await page.goto(url);
+    await page.goto(url, { waitUntil: NETWORK_IDLE_EVENT });
 
     sponsoredLinks = await page.evaluate((selectors) => {
       const adElements = document.querySelectorAll(selectors);
@@ -28,10 +30,12 @@ async function crawlYahoo(keyword, pageNumber) {
       });
       return links;
     }, YAHOO_AD_SELECTORS);
-
-    await browser.close();
   } catch (error) {
-    console.error(`Error occurred while crawling Yahoo: ${error}`);
+    console.error(`Error occurred while crawling ${SEARCH_ENGINES.YAHOO}: ${error}`);
+  }
+
+  if (browser) {
+    await browser.close();
   }
 
   return {

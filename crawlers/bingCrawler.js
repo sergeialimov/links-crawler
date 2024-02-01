@@ -11,9 +11,10 @@ const {
 const { parseHeadlessMode } = require('../utils');
 
 async function crawlBing(keyword, pageNumber) {
+  let browser;
   let sponsoredLinks = [];
   try {
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       headless: parseHeadlessMode(process.env.HEADLESS_MODE),
     });
     const page = await browser.newPage();
@@ -37,10 +38,12 @@ async function crawlBing(keyword, pageNumber) {
       // Extract the text content, which is the URL
       return Array.from(ads).map((attribute) => attribute.innerText.trim());
     }, BING_URL_SELECTOR);
-
-    await browser.close();
   } catch (error) {
-    console.error(`Error occurred while crawling Bing: ${error}`);
+    console.error(`Error occurred while crawling ${SEARCH_ENGINES.BING}: ${error}`);
+  }
+
+  if (browser) {
+    await browser.close();
   }
 
   return {
