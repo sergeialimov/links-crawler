@@ -2,6 +2,7 @@ const { Worker } = require('worker_threads');
 const path = require('path');
 
 const { aggregateResults, log } = require('../utils');
+const { SEARCH_ENGINES } = require('../constants');
 
 function runService(workerData) {
   const start = performance.now();
@@ -27,9 +28,14 @@ function runService(workerData) {
 async function startCrawling(pages, keywords) {
   const searchEngines = process.env.SEARCH_ENGINES.split(',');
 
-  // Create an array of tasks using array methods instead of loops
-  const tasks = keywords.flatMap((keyword) => searchEngines.flatMap((searchEngine) => Array
-    .from({ length: pages }, (_, i) => runService({ keyword, searchEngine, page: i + 1 }))));
+  // For Google, generates one task per keyword. For others, one task per page per keyword.
+  const tasks = keywords.flatMap((keyword) => searchEngines.flatMap((searchEngine) => {
+    if (searchEngine === SEARCH_ENGINES.GOOGLE) {
+      return runService({ keyword, searchEngine, page: pages });
+    }
+    return Array
+      .from({ length: pages }, (_, i) => runService({ keyword, searchEngine, page: i + 1 }));
+  }));
 
   const results = await Promise.all(tasks);
 
