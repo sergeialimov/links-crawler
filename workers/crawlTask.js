@@ -1,14 +1,16 @@
 const { parentPort, workerData } = require('worker_threads');
+const { GoogleCrawler } = require('../crawlers/googleCrawler'); // Adjust path as necessary
 const {
-  crawlGoogle,
   crawlYahoo,
   crawlBing,
-} = require('../crawlers');
+} = require('../crawlers'); // Keep the other crawlers as they are
 
 async function crawlPage(keyword, searchEngine, pageNumber) {
   switch (searchEngine) {
-    case 'google':
-      return crawlGoogle(keyword, pageNumber);
+    case 'google': {
+      const googleCrawler = new GoogleCrawler();
+      return googleCrawler.crawlGoogle(keyword, pageNumber);
+    }
     case 'yahoo':
       return crawlYahoo(keyword, pageNumber);
     case 'bing':
