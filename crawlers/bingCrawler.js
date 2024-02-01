@@ -8,11 +8,14 @@ const {
   NETWORK_IDLE_EVENT,
   BING_COOKIE_BUTTON_SELECTOR,
 } = require('../constants');
+const { parseHeadlessMode } = require('../utils');
 
 async function crawlBing(keyword, pageNumber) {
   let sponsoredLinks = [];
   try {
-    const browser = await puppeteer.launch({ headless: process.env.HEADLESS_MODE });
+    const browser = await puppeteer.launch({
+      headless: parseHeadlessMode(process.env.HEADLESS_MODE),
+    });
     const page = await browser.newPage();
 
     // Calculate the offset for the Bing search results based on the page number.

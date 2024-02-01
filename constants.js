@@ -7,6 +7,12 @@ const SEARCH_ENGINES = {
 const RESULTS_PER_PAGE = 10;
 const NETWORK_IDLE_EVENT = 'networkidle2';
 
+const HEADLESS_MODE_VALUES = {
+  TRUE: true,
+  FALSE: false,
+  NEW: 'new',
+};
+
 // Bing
 const BING_BASE_URL = 'https://www.bing.com/search';
 const BING_URL_SELECTOR = '.b_adurl cite';
@@ -25,6 +31,7 @@ module.exports = {
   RESULTS_PER_PAGE,
   SEARCH_ENGINES,
   NETWORK_IDLE_EVENT,
+  HEADLESS_MODE_VALUES,
 
   // Bing
   BING_BASE_URL,

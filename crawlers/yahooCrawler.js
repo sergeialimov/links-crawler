@@ -4,11 +4,14 @@ const {
   YAHOO_BASE_URL,
   SEARCH_ENGINES,
 } = require('../constants');
+const { parseHeadlessMode } = require('../utils');
 
 async function crawlYahoo(keyword, pageNumber) {
   let sponsoredLinks = [];
   try {
-    const browser = await puppeteer.launch({ headless: process.env.HEADLESS_MODE });
+    const browser = await puppeteer.launch({
+      headless: parseHeadlessMode(process.env.HEADLESS_MODE),
+    });
     const page = await browser.newPage();
 
     const url = `${YAHOO_BASE_URL}?p=${encodeURIComponent(keyword)}&fp=${pageNumber}`;
