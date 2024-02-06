@@ -1,7 +1,6 @@
 const { AbstractCrawler } = require('./abstractCrawler'); // Adjust the path as necessary
 const {
   SEARCH_ENGINES,
-  NETWORK_IDLE_EVENT,
   YAHOO_AD_SELECTORS,
   YAHOO_BASE_URL,
 } = require('../constants');
@@ -13,7 +12,7 @@ class YahooCrawler extends AbstractCrawler {
       await this.launchBrowser();
 
       const url = `${YAHOO_BASE_URL}?p=${encodeURIComponent(keyword)}&fp=${pageNumber}`;
-      await this.page.goto(url, { waitUntil: NETWORK_IDLE_EVENT });
+      await this.openPage(url);
 
       sponsoredLinks = await this.getSponsoredLinks(YAHOO_AD_SELECTORS);
     } catch (error) {
