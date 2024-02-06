@@ -5,7 +5,6 @@ const {
   RESULTS_PER_PAGE,
   BING_BASE_URL,
   BING_URL_SELECTOR,
-  NETWORK_IDLE_EVENT,
   BING_COOKIE_BUTTON_SELECTOR,
 } = require('../constants');
 const { parseHeadlessMode } = require('../utils');
@@ -23,7 +22,7 @@ async function crawlBing(keyword, pageNumber) {
     const offset = (pageNumber - 1) * RESULTS_PER_PAGE;
     const url = `${BING_BASE_URL}?q=${encodeURIComponent(keyword)}&first=${offset}`;
 
-    await page.goto(url, { waitUntil: NETWORK_IDLE_EVENT });
+    await this.openPage(page, url);
 
     // Handling the cookie consent pop-up
     if (await page.$(BING_COOKIE_BUTTON_SELECTOR) !== null) {

@@ -11,6 +11,8 @@ function apiRoutes(app) {
 
       const keywordsArray = keywords.split(',');
 
+      console.log('Crawling has been started');
+
       const start = performance.now();
       const results = await startCrawling(pages, keywordsArray);
       const end = performance.now();

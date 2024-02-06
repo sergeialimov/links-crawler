@@ -1,24 +1,20 @@
-const puppeteer = require('puppeteer');
+const { AbstractCrawler } = require('./abstractCrawler'); // Adjust the path as necessary
 const {
   SEARCH_ENGINES,
-  NETWORK_IDLE_EVENT,
   GOOGLE_BASE_URL,
   GOOGLE_AD_SELECTOR,
   GOOGLE_MORE_RESULTS_BUTTON_SELECTOR,
   GOOGLE_MAX_SCROLLS,
 } = require('../constants');
-const { parseHeadlessMode } = require('../utils');
 
-class GoogleCrawler {
+class GoogleCrawler extends AbstractCrawler {
   constructor() {
-    this.browser = null;
-    this.page = null;
+    super();
     this.moreResultsButton = null;
     this.notFoundCounter = 0;
   }
 
   async scrollToTheBottom() {
-    /* eslint-disable no-await-in-loop */
     while (!this.moreResultsButton && this.notFoundCounter < GOOGLE_MAX_SCROLLS) {
       await this.page.evaluate(async () => {
         const { scrollHeight } = document.body;
@@ -38,57 +34,42 @@ class GoogleCrawler {
     }
   }
 
-  async getSponsoredLinks() {
-    /* eslint-disable no-await-in-loop */
-    return this.page.evaluate((sel) => {
-      const links = [];
-      const ads = document.querySelectorAll(sel);
-      ads.forEach((ad) => {
-        const linkElement = ad.querySelector('a');
-        if (linkElement) {
-          links.push(linkElement.href);
-        }
-      });
-      return links;
-    }, GOOGLE_AD_SELECTOR);
+  async clickMoreResultsButton() {
+    await this.page.evaluate((sel) => {
+      const moreResultsButton = document.querySelector(sel);
+      if (moreResultsButton) {
+        moreResultsButton.click();
+      }
+    }, GOOGLE_MORE_RESULTS_BUTTON_SELECTOR);
   }
 
-  async crawlGoogle(keyword, pageNumber) {
+  async crawl(keyword, pageNumber) {
     let sponsoredLinks = [];
     try {
-      this.browser = await puppeteer.launch({
-        headless: parseHeadlessMode(process.env.HEADLESS_MODE),
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      });
-      this.page = await this.browser.newPage();
+      await this.launchBrowser();
 
       const url = `${GOOGLE_BASE_URL}?q=${encodeURIComponent(keyword)}&hl=en&gl=us`;
-      await this.page.goto(url, { waitUntil: NETWORK_IDLE_EVENT });
+      await this.openPage(url);
 
       for (let i = 0; i < pageNumber; i += 1) {
         this.moreResultsButton = null;
         this.notFoundCounter = 0;
 
         await this.scrollToTheBottom();
-        sponsoredLinks = sponsoredLinks.concat(await this.getSponsoredLinks());
+        const links = await this.getSponsoredLinks(GOOGLE_AD_SELECTOR, SEARCH_ENGINES.GOOGLE);
+        sponsoredLinks = sponsoredLinks.concat(links);
 
-        await this.page.evaluate((sel) => {
-          const moreResultsButton = document.querySelector(sel);
-          if (moreResultsButton) {
-            console.log('-- moreResultsButton', moreResultsButton);
-            moreResultsButton.click();
-          }
-        }, GOOGLE_MORE_RESULTS_BUTTON_SELECTOR);
-        await this.page.waitForNetworkIdle();
+        if (this.moreResultsButton) {
+          await this.clickMoreResultsButton();
+          await this.page.waitForNetworkIdle();
+        }
       }
 
       await this.page.waitForTimeout(1000);
     } catch (error) {
       console.error(`Error in ${SEARCH_ENGINES.GOOGLE}: ${error.message}`);
-    }
-
-    if (this.browser) {
-      await this.browser.close();
+    } finally {
+      await this.closeBrowser();
     }
 
     return {
