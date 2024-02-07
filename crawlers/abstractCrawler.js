@@ -31,29 +31,28 @@ class AbstractCrawler {
   }
 
   async getSponsoredLinks(selector, searchEngine) {
-    return this.page.evaluate((sel, engine) => {
+    return this.page.evaluate((sel, engine, engines) => {
       const links = [];
       const adElements = document.querySelectorAll(sel);
-      console.log('-- SEARCH_ENGINES', SEARCH_ENGINES);
-      // adElements.forEach((element) => {
-      //   let href;
-      //   if (engine === SEARCH_ENGINES.GOOGLE) {
-      //     href = element.getAttribute('href');
-      //     const linkElement = element.querySelector('a');
-      //     if (linkElement) {
-      //       links.push(linkElement.href);
-      //     }
-      //   } else if (engine === SEARCH_ENGINES.YAHOO) {
-      //     href = element.getAttribute('href');
-      //   } else if (engine === SEARCH_ENGINES.BING) {
-      //     href = element.innerText.trim();
-      //   }
-      //   if (href) {
-      //     links.push(href);
-      //   }
-      // });
-      // return links;
-    }, selector, searchEngine);
+      adElements.forEach((element) => {
+        let href;
+        if (engine === engines.GOOGLE) {
+          href = element.getAttribute('href');
+          const linkElement = element.querySelector('a');
+          if (linkElement) {
+            links.push(linkElement.href);
+          }
+        } else if (engine === engines.YAHOO) {
+          href = element.getAttribute('href');
+        } else if (engine === engines.BING) {
+          href = element.innerText.trim();
+        }
+        if (href) {
+          links.push(href);
+        }
+      });
+      return links;
+    }, selector, searchEngine, SEARCH_ENGINES);
   }
 
   async crawl() {
