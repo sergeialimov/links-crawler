@@ -1,7 +1,11 @@
 const puppeteer = require('puppeteer');
 const { parseHeadlessMode } = require('../utils');
-const { NETWORK_IDLE_EVENT, SEARCH_ENGINES } = require('../constants');
-// const { SEARCH_ENGINES, NETWORK_IDLE_EVENT } = require('../constants');
+const {
+  SEARCH_ENGINES,
+  NETWORK_IDLE_EVENT,
+  DEFAULT_TIMEOUT,
+  DEFAULT_IDLE_TIMEOUT,
+} = require('../constants');
 
 class AbstractCrawler {
   constructor() {
@@ -28,6 +32,14 @@ class AbstractCrawler {
     if (this.browser) {
       await this.browser.close();
     }
+  }
+
+  async waitForNetworkIdle({
+    idleTime = DEFAULT_IDLE_TIMEOUT,
+    timeout = DEFAULT_TIMEOUT,
+  } = {}) {
+    await this.page.waitForNetworkIdle({ idleTime, timeout })
+      .catch((e) => console.log('Network idle not reached within timeout', e));
   }
 
   async getSponsoredLinks(selector, searchEngine) {

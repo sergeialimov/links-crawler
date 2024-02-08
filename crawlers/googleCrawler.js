@@ -1,10 +1,12 @@
-const { AbstractCrawler } = require('./abstractCrawler'); // Adjust the path as necessary
+const { AbstractCrawler } = require('./abstractCrawler');
 const {
   SEARCH_ENGINES,
   GOOGLE_BASE_URL,
   GOOGLE_AD_SELECTOR,
+  GOOGLE_MERCHANT_ID_SELECTOR,
   GOOGLE_MORE_RESULTS_BUTTON_SELECTOR,
   GOOGLE_MAX_SCROLLS,
+  WAIT_TIMEOUT,
 } = require('../constants');
 
 class GoogleCrawler extends AbstractCrawler {
@@ -20,18 +22,42 @@ class GoogleCrawler extends AbstractCrawler {
         const { scrollHeight } = document.body;
         for (let j = 0; j < scrollHeight; j += 200) {
           window.scrollTo(0, j);
-          await new Promise((resolve) => {
-            setTimeout(resolve, 100);
-          });
         }
       });
 
-      await this.page.waitForTimeout(1000);
+      await this.page.waitForTimeout(WAIT_TIMEOUT);
       this.moreResultsButton = await this.page.$(GOOGLE_MORE_RESULTS_BUTTON_SELECTOR);
       if (!this.moreResultsButton) {
         this.notFoundCounter += 1;
       }
     }
+  }
+
+  async getSponsoredLinks(adSelector, merchantSelector) {
+    return this.page.evaluate((adSel, merchantSel) => {
+      const links = [];
+
+      // Step 1: Locate all elements with merchant IDs and extract links
+      const elementsWithMerchantId = document.querySelectorAll(merchantSel);
+      elementsWithMerchantId.forEach((element) => {
+        const href = element.getAttribute('href');
+        if (href) {
+          links.push(href);
+        }
+      });
+
+      // Step 2: Locate all elements by the passed selector
+      const selectedElements = document.querySelectorAll(adSel);
+      selectedElements.forEach((element) => {
+        const href = element.getAttribute('href');
+        // Avoid duplicate links if they were already added in step 1
+        if (href && !links.includes(href)) {
+          links.push(href);
+        }
+      });
+
+      return links;
+    }, adSelector, merchantSelector);
   }
 
   async clickMoreResultsButton() {
@@ -56,12 +82,12 @@ class GoogleCrawler extends AbstractCrawler {
         this.notFoundCounter = 0;
 
         await this.scrollToTheBottom();
-        const links = await this.getSponsoredLinks(GOOGLE_AD_SELECTOR, SEARCH_ENGINES.GOOGLE);
+        const links = await this.getSponsoredLinks(GOOGLE_AD_SELECTOR, GOOGLE_MERCHANT_ID_SELECTOR);
         sponsoredLinks = sponsoredLinks.concat(links);
 
         if (this.moreResultsButton) {
           await this.clickMoreResultsButton();
-          await this.page.waitForNetworkIdle();
+          await this.waitForNetworkIdle();
         }
       }
 
