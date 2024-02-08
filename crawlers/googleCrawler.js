@@ -12,6 +12,7 @@ const {
 class GoogleCrawler extends AbstractCrawler {
   constructor() {
     super();
+    this.searchEngine = SEARCH_ENGINES.GOOGLE;
     this.moreResultsButton = null;
     this.notFoundCounter = 0;
   }
@@ -93,13 +94,13 @@ class GoogleCrawler extends AbstractCrawler {
 
       await this.page.waitForTimeout(1000);
     } catch (error) {
-      console.error(`Error in ${SEARCH_ENGINES.GOOGLE}: ${error.message}`);
+      console.error(`Error occurred while crawling ${this.searchEngine}: ${error}`);
     } finally {
       await this.closeBrowser();
     }
 
     return {
-      searchEngine: SEARCH_ENGINES.GOOGLE,
+      searchEngine: this.searchEngine,
       keyword,
       sponsoredLinks,
       page: pageNumber,

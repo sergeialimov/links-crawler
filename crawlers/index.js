@@ -1,9 +1,9 @@
 const { YahooCrawler } = require('./yahooCrawler');
 const { GoogleCrawler } = require('./googleCrawler');
-const { crawlBing } = require('./bingCrawler');
+const { BingCrawler } = require('./bingCrawler');
 
 module.exports = {
   YahooCrawler,
   GoogleCrawler,
-  crawlBing,
+  BingCrawler,
 };

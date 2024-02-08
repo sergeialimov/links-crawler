@@ -1,4 +1,4 @@
-const { AbstractCrawler } = require('./abstractCrawler'); // Adjust the path as necessary
+const { AbstractCrawler } = require('./abstractCrawler');
 const {
   SEARCH_ENGINES,
   YAHOO_AD_SELECTORS,
@@ -6,6 +6,11 @@ const {
 } = require('../constants');
 
 class YahooCrawler extends AbstractCrawler {
+  constructor() {
+    super();
+    this.searchEngine = SEARCH_ENGINES.YAHOO;
+  }
+
   async getSponsoredLinks(selector) {
     return this.page.evaluate((sel) => {
       const links = [];
@@ -30,13 +35,13 @@ class YahooCrawler extends AbstractCrawler {
 
       sponsoredLinks = await this.getSponsoredLinks(YAHOO_AD_SELECTORS);
     } catch (error) {
-      console.error(`Error occurred while crawling ${SEARCH_ENGINES.YAHOO}: ${error}`);
+      console.error(`Error occurred while crawling ${this.searchEngine}: ${error}`);
     } finally {
       await this.closeBrowser();
     }
 
     return {
-      searchEngine: SEARCH_ENGINES.YAHOO,
+      searchEngine: this.searchEngine,
       keyword,
       sponsoredLinks,
       pageNum: pageNumber,
