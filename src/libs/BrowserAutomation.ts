@@ -1,4 +1,6 @@
-import puppeteer, { Browser, Page, ElementHandle } from 'puppeteer';
+import puppeteer, {
+  Browser, Page, ElementHandle, PuppeteerLifeCycleEvent,
+} from 'puppeteer';
 import { parseHeadlessMode } from '../utils';
 import {
   NETWORK_IDLE_EVENT,
@@ -28,7 +30,7 @@ class BrowserAutomation {
     if (!this.page) {
       throw new Error('Page is not initialized');
     }
-    await this.page.goto(url, { waitUntil: NETWORK_IDLE_EVENT as puppeteer.LoadEvent });
+    await this.page.goto(url, { waitUntil: NETWORK_IDLE_EVENT as PuppeteerLifeCycleEvent });
   }
 
   async closeBrowser(): Promise<void> {
@@ -59,12 +61,12 @@ class BrowserAutomation {
 
   public async waitForSelector(
     selector: string,
-    options?: puppeteer.WaitForSelectorOptions,
+    timeout = WAIT_TIMEOUT,
   ): Promise<ElementHandle<Element> | null> {
     if (!this.page) {
       throw new Error('Page is not initialized');
     }
-    return this.page.waitForSelector(selector, options);
+    return this.page.waitForSelector(selector, { timeout });
   }
 
   public async evaluate<T extends string[]>(
@@ -101,7 +103,7 @@ class BrowserAutomation {
       });
 
       await this.waitForTimeout(waitTimeout);
-      const moreResultsButton = await this.waitForSelector(selector, { timeout: waitTimeout });
+      const moreResultsButton = await this.waitForSelector(selector);
       if (moreResultsButton) {
         buttonFound = true;
       } else {

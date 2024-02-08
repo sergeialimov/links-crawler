@@ -33,9 +33,9 @@ abstract class AbstractCrawler {
 
   async waitForSelector(
     selector: string,
-    options?: puppeteer.WaitForSelectorOptions,
+    timeout?: number,
   ): Promise<void> {
-    await this.browserAutomation.waitForSelector(selector, options);
+    await this.browserAutomation.waitForSelector(selector, timeout);
   }
 
   abstract getSponsoredLinks(selector: string, secondSelector?: string): Promise<string[]>;

@@ -5,7 +5,6 @@ import {
   BING_BASE_URL,
   BING_URL_SELECTOR,
   BING_COOKIE_BUTTON_SELECTOR,
-  WAIT_TIMEOUT,
 } from '../constants';
 
 import { CrawlResult } from '../interfaces/types';
@@ -47,13 +46,13 @@ class BingCrawler extends AbstractCrawler {
 
       // Handling the cookie consent pop-up
       const cookieButton = await this.browserAutomation
-        .waitForSelector(BING_COOKIE_BUTTON_SELECTOR, { timeout: WAIT_TIMEOUT });
+        .waitForSelector(BING_COOKIE_BUTTON_SELECTOR);
       if (cookieButton !== null) {
         await this.browserAutomation.click(BING_COOKIE_BUTTON_SELECTOR);
       }
 
       // Wait for the sponsored ads to load
-      await this.browserAutomation.waitForSelector(BING_URL_SELECTOR, { timeout: WAIT_TIMEOUT });
+      await this.browserAutomation.waitForSelector(BING_URL_SELECTOR);
       sponsoredLinks = await this.getSponsoredLinks(BING_URL_SELECTOR);
 
       return {
