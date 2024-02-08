@@ -1,11 +1,13 @@
-function aggregateResults(results) {
+import { CrawlResult, AggregatedResult } from '../interfaces/types';
+
+function aggregateResults(results: CrawlResult[][]): { data: AggregatedResult[] } {
   // Flatten the nested arrays of results into a single array
   const flatResults = results.flat();
 
   // Use reduce to aggregate the results
-  const data = flatResults.reduce((accumulator, result) => {
+  const data = flatResults.reduce<AggregatedResult[]>((accumulator, result) => {
     const {
-      searchEngine, keyword, pageNum, sponsoredLinks,
+      searchEngine, keyword, pageNumber: pageNum, sponsoredLinks,
     } = result;
 
     // Find the existing entry with the same uniqueKey, if any
@@ -36,4 +38,4 @@ function aggregateResults(results) {
   return { data };
 }
 
-module.exports = { aggregateResults };
+export default aggregateResults;

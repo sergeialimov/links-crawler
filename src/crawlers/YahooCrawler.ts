@@ -1,19 +1,26 @@
-const { AbstractCrawler } = require('./abstractCrawler');
-const {
-  SEARCH_ENGINES,
+import AbstractCrawler from './AbstractCrawler';
+import {
+  SearchEngines,
   YAHOO_AD_SELECTORS,
   YAHOO_BASE_URL,
-} = require('../constants');
+} from '../constants';
+
+import { CrawlResult } from '../interfaces/types';
 
 class YahooCrawler extends AbstractCrawler {
+  private searchEngine: keyof typeof SearchEngines;
+
   constructor() {
     super();
-    this.searchEngine = SEARCH_ENGINES.YAHOO;
+    this.searchEngine = SearchEngines.YAHOO;
   }
 
-  async getSponsoredLinks(selector) {
-    return this.page.evaluate((sel) => {
-      const links = [];
+  async getSponsoredLinks(selector: string): Promise<string[]> {
+    if (!this.isPageSet()) {
+      throw new Error('Page is not initialized');
+    }
+    return this.browserAutomation.evaluate((sel: string) => {
+      const links: string[] = [];
       const adElements = document.querySelectorAll(sel);
       adElements.forEach((element) => {
         const href = element.getAttribute('href');
@@ -25,8 +32,8 @@ class YahooCrawler extends AbstractCrawler {
     }, selector);
   }
 
-  async crawl(keyword, pageNumber) {
-    let sponsoredLinks = [];
+  async crawl(keyword: string, pageNumber: number): Promise<CrawlResult> {
+    let sponsoredLinks: string[] = [];
     try {
       await this.launchBrowser();
 
@@ -36,6 +43,7 @@ class YahooCrawler extends AbstractCrawler {
       sponsoredLinks = await this.getSponsoredLinks(YAHOO_AD_SELECTORS);
     } catch (error) {
       console.error(`Error occurred while crawling ${this.searchEngine}: ${error}`);
+      throw error;
     } finally {
       await this.closeBrowser();
     }
@@ -44,9 +52,9 @@ class YahooCrawler extends AbstractCrawler {
       searchEngine: this.searchEngine,
       keyword,
       sponsoredLinks,
-      pageNum: pageNumber,
+      pageNumber,
     };
   }
 }
 
-module.exports = { YahooCrawler };
+export default YahooCrawler;
