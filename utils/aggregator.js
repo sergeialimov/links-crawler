@@ -3,7 +3,7 @@ function aggregateResults(results) {
   const flatResults = results.flat();
 
   // Use reduce to aggregate the results
-  const aggregatedResults = flatResults.reduce((accumulator, result) => {
+  const data = flatResults.reduce((accumulator, result) => {
     const {
       searchEngine, keyword, pageNum, sponsoredLinks,
     } = result;
@@ -33,7 +33,7 @@ function aggregateResults(results) {
     return accumulator;
   }, []);
 
-  return { aggregatedResults };
+  return { data };
 }
 
 module.exports = { aggregateResults };

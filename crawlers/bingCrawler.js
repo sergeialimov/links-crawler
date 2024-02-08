@@ -5,6 +5,7 @@ const {
   BING_BASE_URL,
   BING_URL_SELECTOR,
   BING_COOKIE_BUTTON_SELECTOR,
+  WAIT_TIMEOUT,
 } = require('../constants');
 
 class BingCrawler extends AbstractCrawler {
@@ -16,7 +17,13 @@ class BingCrawler extends AbstractCrawler {
   async getSponsoredLinks(selector) {
     return this.page.evaluate((sel) => {
       const ads = document.querySelectorAll(sel);
-      return Array.from(ads).map((ad) => ad.innerText.trim());
+      const links = [];
+      ads.forEach((ad) => {
+        if (ad.innerText.trim() !== '' && !links.includes(ad.innerText.trim())) {
+          links.push(ad.innerText.trim());
+        }
+      });
+      return links;
     }, selector);
   }
 
@@ -25,7 +32,6 @@ class BingCrawler extends AbstractCrawler {
     let sponsoredLinks = [];
 
     try {
-      console.log('-- bing test');
       const offset = (pageNumber - 1) * RESULTS_PER_PAGE;
       const url = `${BING_BASE_URL}?q=${encodeURIComponent(keyword)}&first=${offset}`;
 
@@ -37,7 +43,7 @@ class BingCrawler extends AbstractCrawler {
       }
 
       // Wait for the sponsored ads to load
-      await this.page.waitForSelector(BING_URL_SELECTOR);
+      await this.page.waitForSelector(BING_URL_SELECTOR, { timeout: WAIT_TIMEOUT });
       sponsoredLinks = await this.getSponsoredLinks(BING_URL_SELECTOR);
 
       return {

@@ -42,7 +42,7 @@ class GoogleCrawler extends AbstractCrawler {
       const elementsWithMerchantId = document.querySelectorAll(merchantSel);
       elementsWithMerchantId.forEach((element) => {
         const href = element.getAttribute('href');
-        if (href) {
+        if (href && !links.includes(href)) {
           links.push(href);
         }
       });

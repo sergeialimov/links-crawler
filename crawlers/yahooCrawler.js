@@ -17,7 +17,7 @@ class YahooCrawler extends AbstractCrawler {
       const adElements = document.querySelectorAll(sel);
       adElements.forEach((element) => {
         const href = element.getAttribute('href');
-        if (href) {
+        if (href && !links.includes(href)) {
           links.push(href);
         }
       });
