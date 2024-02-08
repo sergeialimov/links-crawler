@@ -6,6 +6,20 @@ const {
 } = require('../constants');
 
 class YahooCrawler extends AbstractCrawler {
+  async getSponsoredLinks(selector) {
+    return this.page.evaluate((sel) => {
+      const links = [];
+      const adElements = document.querySelectorAll(sel);
+      adElements.forEach((element) => {
+        const href = element.getAttribute('href');
+        if (href) {
+          links.push(href);
+        }
+      });
+      return links;
+    }, selector);
+  }
+
   async crawl(keyword, pageNumber) {
     let sponsoredLinks = [];
     try {
