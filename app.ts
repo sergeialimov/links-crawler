@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import apiRoutes from './src/routes/sponsoredLinksRoutes';
-import createRateLimiter from './src/utils/rateLimiter';
+import { createRateLimiter } from './src/utils';
 
 // Initialize dotenv to use environment variables
 dotenv.config();
