@@ -1,5 +1,6 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
 import apiRoutes from './src/routes/sponsoredLinksRoutes';
 
 // Initialize dotenv to use environment variables
@@ -11,6 +12,13 @@ const port: number = parseInt(process.env.PORT || '3000', 10);
 
 // Middleware
 app.use(express.json());
+
+// Set Content Security Policy to prevent cross-site scripting (XSS) and related attacks
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+  },
+}));
 
 // Routes
 apiRoutes(app);
