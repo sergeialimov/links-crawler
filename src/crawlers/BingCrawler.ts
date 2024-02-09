@@ -7,7 +7,7 @@ import {
   BING_COOKIE_BUTTON_SELECTOR,
 } from '../constants';
 
-import { CrawlResult } from '../interfaces/types';
+import { CrawlResult } from '../types';
 
 class BingCrawler extends AbstractCrawler {
   private searchEngine: keyof typeof SearchEngines;

@@ -5,7 +5,7 @@ import {
   YAHOO_BASE_URL,
 } from '../constants';
 
-import { CrawlResult } from '../interfaces/types';
+import { CrawlResult } from '../types';
 
 class YahooCrawler extends AbstractCrawler {
   private searchEngine: keyof typeof SearchEngines;

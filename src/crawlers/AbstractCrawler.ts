@@ -1,5 +1,5 @@
 import BrowserAutomation from '../libs/BrowserAutomation';
-import { CrawlResult } from '../interfaces/types';
+import { CrawlResult } from '../types';
 
 abstract class AbstractCrawler {
   protected browserAutomation: BrowserAutomation;

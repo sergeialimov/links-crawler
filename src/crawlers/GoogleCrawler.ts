@@ -8,7 +8,7 @@ import {
   GOOGLE_MAX_SCROLLS,
   WAIT_TIMEOUT,
 } from '../constants';
-import { CrawlResult } from '../interfaces/types';
+import { CrawlResult } from '../types/types';
 
 class GoogleCrawler extends AbstractCrawler {
   private searchEngine: keyof typeof SearchEngines;

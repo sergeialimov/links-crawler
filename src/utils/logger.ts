@@ -1,8 +1,4 @@
-interface WorkerData {
-  keyword: string;
-  page: number;
-  searchEngine: string;
-}
+import { WorkerData } from '../types';
 
 function log(workerData: WorkerData, start: number, end: number, sponsoredLinks?: string[]): void {
   const links = sponsoredLinks?.length || 0;

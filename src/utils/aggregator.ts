@@ -1,4 +1,4 @@
-import { CrawlResult, AggregatedResult } from '../interfaces/types';
+import { CrawlResult, AggregatedResult } from '../types';
 
 function aggregateResults(results: CrawlResult[][]): { data: AggregatedResult[] } {
   // Flatten the nested arrays of results into a single array
