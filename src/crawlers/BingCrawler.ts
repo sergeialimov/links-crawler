@@ -21,7 +21,7 @@ class BingCrawler extends AbstractCrawler {
     if (!this.isPageSet()) {
       throw new Error('Page is not initialized');
     }
-    return this.browserAutomation.evaluate(([sel]: string[]) => {
+    return this.browserAutomation.evaluate<string[]>((sel) => {
       const ads = Array.from(document.querySelectorAll(sel));
       const links: string[] = [];
       ads.forEach((ad) => {
@@ -52,8 +52,11 @@ class BingCrawler extends AbstractCrawler {
       }
 
       // Wait for the sponsored ads to load
-      await this.browserAutomation.waitForSelector(BING_URL_SELECTOR);
-      sponsoredLinks = await this.getSponsoredLinks(BING_URL_SELECTOR);
+      const el = await this.browserAutomation.waitForSelector(BING_URL_SELECTOR);
+
+      if (el) {
+        sponsoredLinks = await this.getSponsoredLinks(BING_URL_SELECTOR);
+      }
 
       return {
         searchEngine: this.searchEngine,

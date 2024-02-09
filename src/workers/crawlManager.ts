@@ -14,7 +14,7 @@ interface CrawlTaskData {
 function runService(workerData: CrawlTaskData): Promise<any> {
   const start = performance.now();
   return new Promise((resolve, reject) => {
-    const worker = new Worker(path.join(__dirname, '../dist/workers/crawlTask.js'), { workerData });
+    const worker = new Worker(path.join(__dirname, 'crawlTask.js'), { workerData });
 
     worker.on('message', (result) => {
       const end = performance.now();

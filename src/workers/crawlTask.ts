@@ -32,6 +32,7 @@ async function executeCrawl() {
       parentPort.postMessage(result);
     }
   } catch (error) {
+    console.error(error);
     if (error instanceof Error && parentPort) {
       parentPort.postMessage({ error: error.message });
     } else if (parentPort) {

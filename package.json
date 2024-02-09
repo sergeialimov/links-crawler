@@ -2,11 +2,10 @@
   "name": "links-crawler",
   "version": "1.0.0",
   "main": "app.ts",
-  "type": "module",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/app.js",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix"
   },

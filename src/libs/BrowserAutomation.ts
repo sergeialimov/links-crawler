@@ -66,17 +66,23 @@ class BrowserAutomation {
     if (!this.page) {
       throw new Error('Page is not initialized');
     }
-    return this.page.waitForSelector(selector, { timeout });
+    try {
+      return await this.page.waitForSelector(selector, { timeout });
+    } catch (error) {
+      console.log(`Selector ${selector} not found, proceeding without it`);
+      return null;
+    }
   }
 
-  public async evaluate<T extends string[]>(
-    pageFunction: puppeteer.PageFunction<T>,
-    ...args: string[]
+  public async evaluate<T>(
+    pageFunction: (...args: any[]) => T,
+    ...args: any[]
   ): Promise<T> {
     if (!this.page) {
       throw new Error('Page is not initialized');
     }
-    return this.page.evaluate(pageFunction, ...args);
+    const result = await this.page.evaluate(pageFunction as any, ...args);
+    return result as T;
   }
 
   public async waitForTimeout(timeout = WAIT_TIMEOUT): Promise<void> {
