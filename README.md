@@ -10,7 +10,7 @@ The Sponsored Links Crawler is a NodeJS application designed to crawl sponsored 
 - Yarn package manager
 
 ### Installation
-1. Clone the repository to your local machine using `git clone [repository_url]`.
+1. Clone the repository to your local machine using `git clone git@github.com:sergeialimov/links-crawler.git`.
 2. Navigate to the project directory.
 3. Run `yarn install` to install the necessary dependencies.
 
@@ -26,3 +26,52 @@ The Sponsored Links Crawler is a NodeJS application designed to crawl sponsored 
 
 ## Output
 The server will respond with a JSON object containing the aggregated results of sponsored links from the specified search engines and keywords.
+
+
+Example:
+```json
+{
+    "data": [
+        {
+            "searchEngine": "GOOGLE",
+            "keyword": "buy iphone tbilisi",
+            "sponsoredLinks": [
+                {
+                    "page": 1,
+                    "links": [
+                        "https://ispace.ge/iphone/iphone-12/iphone-12-128-gb-black-mgja3rma",
+                        "https://veli.store/en/details/apple-iphone-15-6-gb-256-gb-green/?sku=195949037566",
+                        "https://cosmo.ge/product/apple-iphone-12-64gb-bluemeoradi",
+                        "https://ispace.ge/iphone/iphone-14-pro/iphone-14-pro-512-gb-space-black-mq1m3hxa",
+                        "https://zoommer.ge/en/mobile-phones/apple-iphone-14-pro-256gb-space-black-p20101",
+                        "https://ispace.ge/iphone/iphone-14/iphone-14-128-gb-midnight-mpuf3hxa",
+                        "https://zoommer.ge/en/mobile-phones/apple-iphone-14-128gb-purple-p32570"
+                    ]
+                }
+            ]
+        },
+        {
+            "searchEngine": "YAHOO",
+            "keyword": "buy iphone tbilisi",
+            "sponsoredLinks": [
+                {
+                    "page": 1,
+                    "links": []
+                }
+            ]
+        },
+        {
+            "searchEngine": "BING",
+            "keyword": "buy iphone tbilisi",
+            "sponsoredLinks": [
+                {
+                    "page": 1,
+                    "links": [
+                        "https://www.walmart.com/cell phones"
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```

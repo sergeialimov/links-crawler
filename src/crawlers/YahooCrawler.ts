@@ -15,7 +15,7 @@ class YahooCrawler extends AbstractCrawler {
     this.searchEngine = SearchEngines.YAHOO;
   }
 
-  async getSponsoredLinks(selector: string): Promise<string[]> {
+  protected async getSponsoredLinks(selector: string): Promise<string[]> {
     if (!this.isPageSet()) {
       throw new Error('Page is not initialized');
     }
@@ -32,7 +32,7 @@ class YahooCrawler extends AbstractCrawler {
     }, selector);
   }
 
-  async crawl(keyword: string, pageNumber: number): Promise<CrawlResult> {
+  public async crawl(keyword: string, pageNumber: number): Promise<CrawlResult> {
     let sponsoredLinks: string[] = [];
     try {
       await this.launchBrowser();

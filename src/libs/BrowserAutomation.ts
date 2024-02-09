@@ -22,18 +22,22 @@ class BrowserAutomation {
     this.page = await this.browser.newPage();
   }
 
-  public isPageSet(): boolean {
-    return this.page !== undefined && this.page !== null;
-  }
-
-  async openPage(url: string): Promise<void> {
+  private ensurePageIsInitialized(): void {
     if (!this.page) {
       throw new Error('Page is not initialized');
     }
-    await this.page.goto(url, { waitUntil: NETWORK_IDLE_EVENT as PuppeteerLifeCycleEvent });
   }
 
-  async closeBrowser(): Promise<void> {
+  public isPageSet(): boolean {
+    return this.page !== null;
+  }
+
+  public async openPage(url: string): Promise<void> {
+    this.ensurePageIsInitialized();
+    await this.page!.goto(url, { waitUntil: NETWORK_IDLE_EVENT as PuppeteerLifeCycleEvent });
+  }
+
+  public async closeBrowser(): Promise<void> {
     if (this.browser) {
       await this.browser.close();
       this.browser = null;
@@ -41,35 +45,28 @@ class BrowserAutomation {
     }
   }
 
-  async waitForNetworkIdle({
+  public async waitForNetworkIdle({
     idleTime = DEFAULT_IDLE_TIMEOUT,
     timeout = DEFAULT_TIMEOUT,
   } = {}): Promise<void> {
-    if (!this.page) {
-      throw new Error('Page is not initialized');
-    }
-    await this.page.waitForNetworkIdle({ idleTime, timeout })
+    this.ensurePageIsInitialized();
+    await this.page!.waitForNetworkIdle({ idleTime, timeout })
       .catch((e) => console.log('Network idle not reached within timeout', e));
   }
 
   public async click(selector: string): Promise<void> {
-    if (!this.page) {
-      throw new Error('Page is not initialized');
-    }
-    await this.page.click(selector);
+    this.ensurePageIsInitialized();
+    await this.page!.click(selector);
   }
 
   public async waitForSelector(
     selector: string,
     timeout = WAIT_TIMEOUT,
   ): Promise<ElementHandle<Element> | null> {
-    if (!this.page) {
-      throw new Error('Page is not initialized');
-    }
+    this.ensurePageIsInitialized();
     try {
-      return await this.page.waitForSelector(selector, { timeout });
+      return await this.page!.waitForSelector(selector, { timeout });
     } catch (error) {
-      console.log(`Selector ${selector} not found, proceeding without it`);
       return null;
     }
   }
@@ -78,17 +75,12 @@ class BrowserAutomation {
     pageFunction: (...args: any[]) => T,
     ...args: any[]
   ): Promise<T> {
-    if (!this.page) {
-      throw new Error('Page is not initialized');
-    }
-    const result = await this.page.evaluate(pageFunction as any, ...args);
-    return result as T;
+    this.ensurePageIsInitialized();
+    return await this.page!.evaluate(pageFunction, ...args) as T;
   }
 
   public async waitForTimeout(timeout = WAIT_TIMEOUT): Promise<void> {
-    if (!this.page) {
-      throw new Error('Page is not initialized');
-    }
+    this.ensurePageIsInitialized();
     await new Promise((resolve) => { setTimeout(resolve, timeout); });
   }
 
@@ -97,6 +89,7 @@ class BrowserAutomation {
     maxScrolls: number,
     waitTimeout: number,
   ): Promise<boolean> {
+    this.ensurePageIsInitialized();
     let notFoundCounter = 0;
     let buttonFound = false;
 
@@ -121,11 +114,9 @@ class BrowserAutomation {
   }
 
   public async clickSelector(selector: string): Promise<void> {
-    if (!this.page) {
-      throw new Error('Page is not initialized');
-    }
-    await this.page.waitForSelector(selector, { visible: true });
-    await this.page.click(selector);
+    this.ensurePageIsInitialized();
+    await this.page!.waitForSelector(selector, { visible: true });
+    await this.page!.click(selector);
   }
 }
 

@@ -8,7 +8,7 @@ import {
   GOOGLE_MAX_SCROLLS,
   WAIT_TIMEOUT,
 } from '../constants';
-import { CrawlResult } from '../types/types';
+import { CrawlResult } from '../types';
 
 class GoogleCrawler extends AbstractCrawler {
   private searchEngine: keyof typeof SearchEngines;
@@ -30,7 +30,8 @@ class GoogleCrawler extends AbstractCrawler {
     );
   }
 
-  async getSponsoredLinks(adSelector: string, merchantSelector: string): Promise<string[]> {
+  protected async getSponsoredLinks(adSelector: string, merchantSelector: string):
+  Promise<string[]> {
     return this.browserAutomation.evaluate<string[]>((adSel: string, merchantSel: string) => {
       const links: string[] = [];
 

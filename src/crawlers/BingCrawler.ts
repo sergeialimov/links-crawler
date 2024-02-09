@@ -17,7 +17,7 @@ class BingCrawler extends AbstractCrawler {
     this.searchEngine = SearchEngines.BING;
   }
 
-  async getSponsoredLinks(selector: string): Promise<string[]> {
+  protected async getSponsoredLinks(selector: string): Promise<string[]> {
     if (!this.isPageSet()) {
       throw new Error('Page is not initialized');
     }
@@ -34,7 +34,7 @@ class BingCrawler extends AbstractCrawler {
     }, selector);
   }
 
-  async crawl(keyword: string, pageNumber: number): Promise<CrawlResult> {
+  public async crawl(keyword: string, pageNumber: number): Promise<CrawlResult> {
     await this.launchBrowser();
     let sponsoredLinks: string[] = [];
 

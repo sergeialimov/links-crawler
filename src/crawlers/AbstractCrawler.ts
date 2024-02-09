@@ -15,30 +15,32 @@ abstract class AbstractCrawler {
     return this.browserAutomation.isPageSet();
   }
 
-  async launchBrowser(): Promise<void> {
+  public async launchBrowser(): Promise<void> {
     await this.browserAutomation.launchBrowser();
   }
 
-  async openPage(url: string): Promise<void> {
+  public async openPage(url: string): Promise<void> {
     await this.browserAutomation.openPage(url);
   }
 
-  async closeBrowser(): Promise<void> {
+  public async closeBrowser(): Promise<void> {
     await this.browserAutomation.closeBrowser();
   }
 
-  async waitForNetworkIdle(options?: { idleTime?: number; timeout?: number }): Promise<void> {
+  public async waitForNetworkIdle(options?: { idleTime?: number; timeout?: number }):
+  Promise<void> {
     await this.browserAutomation.waitForNetworkIdle(options);
   }
 
-  async waitForSelector(
+  public async waitForSelector(
     selector: string,
     timeout?: number,
   ): Promise<void> {
     await this.browserAutomation.waitForSelector(selector, timeout);
   }
 
-  abstract getSponsoredLinks(selector: string, secondSelector?: string): Promise<string[]>;
+  protected abstract getSponsoredLinks(selector: string, secondSelector?: string):
+  Promise<string[]>;
 
   abstract crawl(keyword: string, pageNumber: number): Promise<CrawlResult>;
 }
