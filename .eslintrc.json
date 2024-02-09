@@ -17,10 +17,14 @@
       },
       "files": [
         ".eslintrc.{js,cjs}",
-        "**/*.ts"
+        "**/*.ts",
+        "*.test.ts",
+        "!jest.config.ts"
       ],
+      "excludedFiles": "*.test.ts",
       "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": "./tsconfig.json"
       }
     }
   ],

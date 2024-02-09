@@ -35,5 +35,5 @@ export const GOOGLE_MORE_RESULTS_BUTTON_SELECTOR = 'a[role="button"][aria-label=
 export const GOOGLE_MAX_SCROLLS = 10;
 
 // Rate limiter
-export const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+export const RATE_LIMIT_WINDOW_MS = 1 * 60 * 1000; // 1 minute
 export const MAX_REQUESTS_PER_WINDOW = 100;
