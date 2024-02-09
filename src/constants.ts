@@ -33,3 +33,7 @@ export const GOOGLE_AD_SELECTOR = '[data-text-ad]';
 export const GOOGLE_MERCHANT_ID_SELECTOR = '[data-merchant-id]';
 export const GOOGLE_MORE_RESULTS_BUTTON_SELECTOR = 'a[role="button"][aria-label="More results"]';
 export const GOOGLE_MAX_SCROLLS = 10;
+
+// Rate limiter
+export const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+export const MAX_REQUESTS_PER_WINDOW = 100;

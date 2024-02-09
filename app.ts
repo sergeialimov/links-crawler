@@ -1,11 +1,13 @@
-import express, { Express } from 'express';
+import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import apiRoutes from './src/routes/sponsoredLinksRoutes';
+import createRateLimiter from './src/utils/rateLimiter';
 
 // Initialize dotenv to use environment variables
 dotenv.config();
 
+// Initialize the Express application and set the host and port from environment variables
 const app: Express = express();
 const host = process.env.HOST || 'localhost';
 const port: number = parseInt(process.env.PORT || '3000', 10);
@@ -20,8 +22,18 @@ app.use(helmet.contentSecurityPolicy({
   },
 }));
 
+// Apply rate limiting middleware
+const limiter = createRateLimiter();
+app.use(limiter);
+
 // Routes
 apiRoutes(app);
+
+// Error handling middleware for unexpected issues
+app.use((err: any, req: Request, res: Response) => {
+  console.error(err.stack);
+  res.status(500).send('Server error.');
+});
 
 // Starting the server
 const server = app.listen(port, host, () => {
