@@ -48,7 +48,10 @@
     ]
   },
   "ignorePatterns": [
-    "dist/workers/crawlManager.js",
-    "dist/workers/crawlTask.js"
+    "dist/**/*.js",
+    "**/*.map",
+    "**/*.json",
+    "**/*.lock",
+    "**/*.md"
   ]
 }
