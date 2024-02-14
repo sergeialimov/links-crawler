@@ -35,6 +35,15 @@ app.use((err: any, req: Request, res: Response) => {
   res.status(500).send('Server error.');
 });
 
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(200).json({});
+  }
+  return next();
+});
+
 // Starting the server
 const server = app.listen(port, host, () => {
   console.log(`Server running on http://${host}:${port}`);
